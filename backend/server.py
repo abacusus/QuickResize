@@ -1,0 +1,111 @@
+# 1. Import necessary tools
+from flask import Flask, request, send_file, jsonify
+from PIL import Image
+import io
+
+# 2. Create the Flask web server application
+app = Flask(__name__)
+
+# 3. Define your image configurations with DPI
+from config import form_configs
+
+# 4. Create the image processing function (CORRECTED VERSION)
+def process_image(image_bytes, config):
+    img = Image.open(io.BytesIO(image_bytes))
+    resized_img = img.resize((config["width"], config["height"]))
+    
+    output_buffer = io.BytesIO()
+    
+    dpi_value = config.get("dpi", 300)
+    dpi_tuple = (dpi_value, dpi_value)
+
+    if config["format"] == "jpeg":
+        # ⭐ FIX: Convert image to RGB to remove transparency before saving as JPEG
+        if resized_img.mode in ("RGBA", "P"):
+            resized_img = resized_img.convert("RGB")
+
+        quality = 90
+        min_quality = 10
+        max_quality = 95
+
+        def save_jpeg_with_quality(buffer, current_quality):
+            buffer.seek(0)
+            buffer.truncate()
+            resized_img.save(buffer, format="jpeg", quality=current_quality, dpi=dpi_tuple)
+
+        # Initial save
+        save_jpeg_with_quality(output_buffer, quality)
+        final_size_kb = len(output_buffer.getvalue()) / 1024
+
+        # Upscaling loop
+        if "minKB" in config and final_size_kb < config["minKB"]:
+            while quality < max_quality:
+                quality += 5
+                save_jpeg_with_quality(output_buffer, quality)
+                final_size_kb = len(output_buffer.getvalue()) / 1024
+                if final_size_kb >= config["minKB"]:
+                    break
+        # Downscaling loop
+        elif "maxKB" in config and final_size_kb > config["maxKB"]:
+            while quality > min_quality:
+                quality -= 5
+                save_jpeg_with_quality(output_buffer, quality)
+                final_size_kb = len(output_buffer.getvalue()) / 1024
+                if final_size_kb <= config["maxKB"]:
+                    break
+    
+    elif config["format"] == "png":
+        resized_img.save(
+            output_buffer,
+            format="png",
+            compress_level=9,
+            dpi=dpi_tuple
+        )
+    
+    else:
+        raise ValueError(f"Unsupported format specified in config: {config['format']}")
+
+
+    # Final validation checks for all formats
+    final_size_kb = len(output_buffer.getvalue()) / 1024
+    if "maxKB" in config and final_size_kb > config["maxKB"]:
+        raise ValueError(f"Could not reduce image size under {config['maxKB']}KB. Final size was {final_size_kb:.0f}KB.")
+
+    if "minKB" in config and final_size_kb < config["minKB"]:
+        raise ValueError(f"Image size is too small ({final_size_kb:.0f}KB). Minimum required is {config['minKB']}KB.")
+
+    output_buffer.seek(0)
+    return output_buffer
+
+
+# 5. Define the main API route (No changes needed here)
+@app.route("/resize/<formType>/<docType>", methods=["POST"])
+def resize_image_api(formType, docType):
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file uploaded. Ensure the form field is named 'file'."}), 400
+
+        uploaded_file = request.files['file']
+        config = form_configs.get(formType, {}).get(docType)
+        if not config:
+            return jsonify({"error": "Invalid form or document type provided."}), 400
+
+        image_bytes = uploaded_file.read()
+        processed_buffer = process_image(image_bytes, config)
+
+        return send_file(
+            processed_buffer,
+            mimetype=f"image/{config['format']}",
+            as_attachment=True,
+            download_name=f"{formType}-{docType}.{config['format']}"
+        )
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": "A server error occurred while processing the image."}), 500
+
+# 6. Start the server when the script is run (No changes needed here)
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
