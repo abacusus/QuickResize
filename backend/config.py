@@ -2,7 +2,7 @@ form_configs = {
     "ssc": {
         "details": {
             "name": "SSC CGL 2025",
-            "logo": "images/ssc.jpg",
+            "logo": "images/ssc.jpg"
         },
         "photo": {
             "width": 480,
