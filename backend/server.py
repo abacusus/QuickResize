@@ -1,13 +1,18 @@
 # 1. Import necessary tools
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify,send_from_directory
 from PIL import Image
 import io
+from flask_cors import CORS
 
 # 2. Create the Flask web server application
 app = Flask(__name__)
 
 # 3. Define your image configurations with DPI
 from config import form_configs
+
+# 3.5 allow all cors
+
+CORS(app)
 
 # 4. Create the image processing function (CORRECTED VERSION)
 def process_image(image_bytes, config):
@@ -105,6 +110,18 @@ def resize_image_api(formType, docType):
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({"error": "A server error occurred while processing the image."}), 500
+    
+# Sending Form and images
+
+@app.route('/details', methods=['GET'])
+def details():
+    details_only = {key: value["details"] for key, value in form_configs.items()}
+    return jsonify(details_only)
+
+#sending images
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory("images", filename)
 
 # 6. Start the server when the script is run (No changes needed here)
 if __name__ == "__main__":
