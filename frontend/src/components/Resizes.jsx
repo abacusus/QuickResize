@@ -43,12 +43,13 @@ const Resizes = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Resize Tool - {formId.toUpperCase()}</h2>
+    <div className="border text-center" style={{ padding: "20px" }}>
+      <h2 className="text-2xl font-bold">Resize Tool - {formId.toUpperCase()}</h2>
 
       <label>
         Select type:{" "}
         <select value={docType} onChange={(e) => setDocType(e.target.value)}>
+        
           <option value="photo">Photo</option>
           <option value="signature">Signature</option>
         </select>

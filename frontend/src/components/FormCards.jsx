@@ -24,19 +24,31 @@ const FormCards = () => {
     fetchDetails();
   }, []);
 
-  
 
-    return (
-    <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-      {forms.map((form) => (
-        <Link to={`/resize/${form.id}`} key={form.id}>
-          <div className="card" style={{ border: "1px solid #ddd", padding: "10px" }}>
-            <img src={form.logo} alt={form.name} width="120" />
-            <h1>{form.name}</h1>
-          </div>
-        </Link>
-      ))}
-    </div>
+
+  return (
+    <>
+      <h1 className='font-bold text-2xl text-center '>All Forms Resizers</h1>
+      <div className='grid grid-cols-1 md:grid-cols-5 gap-4 p-4'>
+        {forms.map((form) => (
+          <Link to={`/resize/${form.id}`} key={form.id}>
+            <div className="card w-50 flex gap-2 flex-col justify-center items-center" style={{ border: "1px solid #ddd", padding: "15px" }}>
+              <img src={form.logo} alt={form.name} className='w-50 h-50 ' />
+              <h1 className='font-bold text-{12px}'>{form.name}</h1>
+              <button
+                className="text-white cursor-pointer px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all"
+                style={{
+                  background:
+                    "linear-gradient(to right, white -123%, black 74%)",
+                }}
+              >
+                Resize
+              </button>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 };
 
