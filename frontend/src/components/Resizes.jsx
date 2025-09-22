@@ -8,8 +8,10 @@ const Resizes = () => {
   const [docType, setDocType] = useState("photo"); // default "photo"
   const [keys, setKeys] = useState([])
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    alert("File Uploaded Successfully,Click on Download Button")
+  }
   const handleUpload = async () => {
     if (!file) {
       alert("Please select a file first!");
@@ -65,22 +67,29 @@ const Resizes = () => {
       <h2 className="text-2xl font-bold m-5 mb-10">Resize Tool - {formId.toUpperCase()}</h2>
       <div className="cards justify-items-center items-center grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
         {keys.map((key) => (
-          <div key={key} className="docCards w-[250px] h-[300px] p-3 flex justify-items-center items-center flex-col gap-10  border-4 rounded-2xl ">
-            <h1 className="font-bold text-xl  m-4">{key}</h1>
-            
-              <label className="" htmlFor="imgType">
-                <img src="/vite.svg" alt="" />
-                <input className="border hidden w-full" id="imgType" type="file" accept="image/*" onChange={handleFileChange} />
-              </label>
-            
-            <button onClick={() => {
-              setDocType(key);
-              handleUpload()
-            }}>Download</button>
+          <div key={key} className="docCards w-[250px] h-[300px] p-3 flex justify-items-center items-center flex-col gap-5  border-4 rounded-2xl ">
+            <h1 className="font-bold  text-xl  m-4">{key}</h1>
+
+            <label className="" htmlFor="imgType">
+              <img className="w-30" src="/upload.png" alt="Upload your files here" />
+              <input className="border hidden w-full" id="imgType" type="file" accept="image/*" onChange={handleFileChange} />
+            </label>
+            <button
+              className="text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all"
+              style={{
+                background: "linear-gradient(to right, white -123%, black 74%)",
+              }}
+              onClick={() => {
+                setDocType(key);
+                handleUpload();
+              }}
+            >
+              Download
+            </button>
           </div>
         ))}
       </div>
-    </div>
+    </div >
   );
 };
 

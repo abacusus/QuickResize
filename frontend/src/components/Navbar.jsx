@@ -21,10 +21,14 @@ const Navbar = () => {
           <nav>
             <ul className="flex justify-center gap-4 flex-row items-center">
               <li className="cursor-pointer px-4 p-1 hover:bg-green-200 rounded-2xl">
+               <Link to={"/"}>
                 Home
+               </Link>
               </li>
               <li className="cursor-pointer px-4 p-1 hover:bg-green-200 rounded-2xl">
+                <Link to={"/About"}>
                 About
+                </Link>
               </li>
               <button
                 className="text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all"

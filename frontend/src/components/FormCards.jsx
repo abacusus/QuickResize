@@ -30,10 +30,10 @@ const FormCards = () => {
   return (
     <>
       <h1 className='font-bold text-2xl text-center mt-5'>All Forms Resizers</h1>
-      <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2 p-4'>
+      <div className='grid justify-items-center items-center grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2 p-4'>
         {forms.map((form) => (
           <Link to={`/resize/${form.id}`} key={form.id}>
-            <div className="card w-50 flex gap-2 flex-col justify-center items-center" style={{ border: "1px solid #ddd", padding: "15px" }}>
+            <div className="card w-50 flex gap-2 flex-col justify-center items-center" style={{ border: "2px solid black", padding: "15px",borderRadius:"10px" }}>
               <img src={form.logo} alt={form.name} className='w-50 h-50 ' />
               <h1 className='font-bold text-{12px}'>{form.name}</h1>
               <button
