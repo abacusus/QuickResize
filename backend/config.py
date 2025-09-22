@@ -4,7 +4,7 @@ form_configs = {
             "name": "SSC CGL 2025",
             "logo": "images/ssc.jpg"
         },
-        "photo": {
+        "Photo": {
             "width": 480,
             "height": 672,
             "minKB": 50,
@@ -12,7 +12,7 @@ form_configs = {
             "format": "jpeg",
             "dpi": 96,
         },
-        "signature": {
+        "Signature": {
             "width": 110,
             "height": 140,
             "minKB": 5,

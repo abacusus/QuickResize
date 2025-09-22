@@ -10,6 +10,7 @@ const FormCards = () => {
     const response = await fetch("http://127.0.0.1:5000/details");
     const data = await response.json();
 
+
     // convert object -> array for easy mapping
     const arr = Object.entries(data).map(([key, value]) => ({
       id: key,
@@ -28,8 +29,8 @@ const FormCards = () => {
 
   return (
     <>
-      <h1 className='font-bold text-2xl text-center '>All Forms Resizers</h1>
-      <div className='grid grid-cols-1 md:grid-cols-5 gap-4 p-4'>
+      <h1 className='font-bold text-2xl text-center mt-5'>All Forms Resizers</h1>
+      <div className='grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2 p-4'>
         {forms.map((form) => (
           <Link to={`/resize/${form.id}`} key={form.id}>
             <div className="card w-50 flex gap-2 flex-col justify-center items-center" style={{ border: "1px solid #ddd", padding: "15px" }}>

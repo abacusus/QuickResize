@@ -15,17 +15,16 @@ from config import form_configs
 CORS(app)
 
 # 4. Create the image processing function (CORRECTED VERSION)
+
 def process_image(image_bytes, config):
     img = Image.open(io.BytesIO(image_bytes))
     resized_img = img.resize((config["width"], config["height"]))
     
     output_buffer = io.BytesIO()
-    
     dpi_value = config.get("dpi", 300)
     dpi_tuple = (dpi_value, dpi_value)
 
     if config["format"] == "jpeg":
-        # ⭐ FIX: Convert image to RGB to remove transparency before saving as JPEG
         if resized_img.mode in ("RGBA", "P"):
             resized_img = resized_img.convert("RGB")
 
@@ -33,32 +32,46 @@ def process_image(image_bytes, config):
         min_quality = 10
         max_quality = 95
 
-        def save_jpeg_with_quality(buffer, current_quality):
+        def save_jpeg_with_quality(buffer, current_quality, dpi_val):
             buffer.seek(0)
             buffer.truncate()
-            resized_img.save(buffer, format="jpeg", quality=current_quality, dpi=dpi_tuple)
+            resized_img.save(buffer, format="jpeg", quality=current_quality, dpi=(dpi_val, dpi_val))
 
         # Initial save
-        save_jpeg_with_quality(output_buffer, quality)
+        save_jpeg_with_quality(output_buffer, quality, dpi_value)
         final_size_kb = len(output_buffer.getvalue()) / 1024
 
-        # Upscaling loop
+        # Upscaling loop: try quality first
         if "minKB" in config and final_size_kb < config["minKB"]:
             while quality < max_quality:
                 quality += 5
-                save_jpeg_with_quality(output_buffer, quality)
+                save_jpeg_with_quality(output_buffer, quality, dpi_value)
                 final_size_kb = len(output_buffer.getvalue()) / 1024
                 if final_size_kb >= config["minKB"]:
                     break
-        # Downscaling loop
-        elif "maxKB" in config and final_size_kb > config["maxKB"]:
-            while quality > min_quality:
-                quality -= 5
-                save_jpeg_with_quality(output_buffer, quality)
+
+        # If still too small, try increasing DPI
+        if "minKB" in config and final_size_kb < config["minKB"]:
+            while dpi_value < 1200:  # Arbitrary upper limit for DPI
+                dpi_value += 100
+                save_jpeg_with_quality(output_buffer, quality, dpi_value)
                 final_size_kb = len(output_buffer.getvalue()) / 1024
-                if final_size_kb <= config["maxKB"]:
+                if final_size_kb >= config["minKB"]:
                     break
-    
+
+        # If still too small, pad image with white border
+        if "minKB" in config and final_size_kb < config["minKB"]:
+            pad = 20
+            while final_size_kb < config["minKB"] and pad < 500:
+                new_w = resized_img.width + pad
+                new_h = resized_img.height + pad
+                padded_img = Image.new("RGB", (new_w, new_h), (255, 255, 255))
+                padded_img.paste(resized_img, ((pad // 2), (pad // 2)))
+                resized_img = padded_img
+                save_jpeg_with_quality(output_buffer, quality, dpi_value)
+                final_size_kb = len(output_buffer.getvalue()) / 1024
+                pad += 20
+
     elif config["format"] == "png":
         resized_img.save(
             output_buffer,
@@ -66,10 +79,8 @@ def process_image(image_bytes, config):
             compress_level=9,
             dpi=dpi_tuple
         )
-    
     else:
         raise ValueError(f"Unsupported format specified in config: {config['format']}")
-
 
     # Final validation checks for all formats
     final_size_kb = len(output_buffer.getvalue()) / 1024
@@ -111,12 +122,15 @@ def resize_image_api(formType, docType):
         print(f"An error occurred: {e}")
         return jsonify({"error": "A server error occurred while processing the image."}), 500
     
-# Sending Form and images
-
+# Sending Form details
 @app.route('/details', methods=['GET'])
 def details():
     details_only = {key: value["details"] for key, value in form_configs.items()}
     return jsonify(details_only)
+
+@app.route('/docType', methods=['GET'])
+def docType():
+    return jsonify(form_configs)
 
 #sending images
 @app.route('/images/<path:filename>')

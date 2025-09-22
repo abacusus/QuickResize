@@ -1,11 +1,12 @@
 // Resizes.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const Resizes = () => {
   const { formId } = useParams();
   const [file, setFile] = useState(null);
   const [docType, setDocType] = useState("photo"); // default "photo"
+  const [keys, setKeys] = useState([])
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
@@ -32,6 +33,7 @@ const Resizes = () => {
       return;
     }
 
+
     // Create download link
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
@@ -40,24 +42,44 @@ const Resizes = () => {
     a.download = `${formId}-${docType}.jpg`; // name from backend
     a.click();
     window.URL.revokeObjectURL(url);
+
+
   };
 
+  //generate no of documents
+  const documentType = async () => {
+    const response = await fetch("http://127.0.0.1:5000/docType");
+    const data = await response.json();
+    const actualData = data[formId]
+    const keys = Object.keys(actualData).filter(key => key !== "details");
+    setKeys(keys);
+
+  }
+
+  useEffect(() => {
+    documentType()
+  }, [])
+
   return (
-    <div className="border text-center" style={{ padding: "20px" }}>
-      <h2 className="text-2xl font-bold">Resize Tool - {formId.toUpperCase()}</h2>
-
-      <label>
-        Select type:{" "}
-        <select value={docType} onChange={(e) => setDocType(e.target.value)}>
-        
-          <option value="photo">Photo</option>
-          <option value="signature">Signature</option>
-        </select>
-      </label>
-
-      <br />
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload & Download Resized</button>
+    <div className=" text-center p-5" >
+      <h2 className="text-2xl font-bold m-5 mb-10">Resize Tool - {formId.toUpperCase()}</h2>
+      <div className="cards justify-items-center items-center grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
+        {keys.map((key) => (
+          <div key={key} className="docCards w-[250px] h-[300px] p-3 flex justify-items-center items-center flex-col gap-10  border-4 rounded-2xl ">
+            <h1 className="font-bold text-xl  m-4">{key}</h1>
+            
+              <label className="" htmlFor="imgType">
+                <img src="/vite.svg" alt="" />
+                <input className="border hidden w-full" id="imgType" type="file" accept="image/*" onChange={handleFileChange} />
+              </label>
+            
+            <button onClick={() => {
+              setDocType(key);
+              handleUpload()
+            }}>Download</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,9 +9,11 @@ const Navbar = () => {
       <div className="navbar w-full mb-10 bg-white shadow-md flex items-center justify-between mt-2 p-2">
         {/* Logo */}
         <div>
-          <p className="cursor-pointer font-bold text-3xl text-purple-500">
-            Quick Resizer
-          </p>
+          <Link to={"/"}>
+            <p className="cursor-pointer font-bold text-3xl text-purple-500">
+              Quick Resizer
+            </p>
+          </Link>
         </div>
 
         {/* Desktop Nav */}
