@@ -9,11 +9,13 @@ import Footer from './components/Footer';
 import Banner from './components/Banner';
 import About from './components/About';
 import Missing from './components/Missing';
+import DisClaimer from './components/DisClaimer';
 
 const App = () => {
   return (
     <Router>
       <Navbar />
+      <DisClaimer/>
       <Routes>
         <Route path="/" element={<FormCards />} />
         <Route path="/resize/:formId" element={<Resizes />} />
