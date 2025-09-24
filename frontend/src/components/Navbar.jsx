@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ onResizerClick }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -21,16 +21,13 @@ const Navbar = () => {
           <nav>
             <ul className="flex justify-center gap-4 flex-row items-center">
               <li className="cursor-pointer px-4 p-1 hover:bg-green-200 rounded-2xl">
-               <Link to={"/"}>
-                Home
-               </Link>
+                <Link to={"/"}>Home</Link>
               </li>
               <li className="cursor-pointer px-4 p-1 hover:bg-green-200 rounded-2xl">
-                <Link to={"/About"}>
-                About
-                </Link>
+                <Link to={"/About"}>About</Link>
               </li>
               <button
+                onClick={onResizerClick}
                 className="text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all"
                 style={{
                   background:
@@ -85,14 +82,18 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white shadow-md flex flex-col items-start gap-2 p-4">
-          <a className="cursor-pointer hover:bg-green-200 w-full rounded p-2">
+          <Link to={"/"} className="cursor-pointer hover:bg-green-200 w-full rounded p-2">
             Home
-          </a>
-          <a className="cursor-pointer hover:bg-green-200 w-full rounded p-2">
+          </Link>
+          <Link to={"/About"} className="cursor-pointer hover:bg-green-200 w-full rounded p-2">
             About
-          </a>
+          </Link>
           <button
-            className="text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all w-full"
+            onClick={() => {
+              onResizerClick();
+              setIsOpen(false); // close menu after click
+            }}
+            className="text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-all w-full cursor-pointer"
             style={{
               background: "linear-gradient(to right, white -123%, black 74%)",
             }}

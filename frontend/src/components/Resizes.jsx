@@ -22,7 +22,7 @@ const Resizes = () => {
     formData.append("file", file);
 
     const response = await fetch(
-      `http://127.0.0.1:5000/resize/${formId}/${docType}`,
+      `https://quickresize-m1au.onrender.com/${formId}/${docType}`,
       {
         method: "POST",
         body: formData,
@@ -50,7 +50,7 @@ const Resizes = () => {
 
   //generate no of documents
   const documentType = async () => {
-    const response = await fetch("http://127.0.0.1:5000/docType");
+    const response = await fetch("https://quickresize-m1au.onrender.com/docType");
     const data = await response.json();
     const actualData = data[formId]
     const keys = Object.keys(actualData).filter(key => key !== "details");
@@ -63,7 +63,9 @@ const Resizes = () => {
   }, [])
 
   return (
-    <div className=" text-center p-5" >
+    <div id="#" className=" text-center p-5" >
+      
+
       <h2 className="text-2xl font-bold m-5 mb-10">Resize Tool - {formId.toUpperCase()}</h2>
       <div className="cards justify-items-center items-center grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-2">
         {keys.map((key) => (
