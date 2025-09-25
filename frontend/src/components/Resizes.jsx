@@ -22,7 +22,7 @@ const Resizes = () => {
     formData.append("file", file);
 
     const response = await fetch(
-      `https://quickresize-m1au.onrender.com/${formId}/${docType}`,
+      `https://quickresize-m1au.onrender.com/resize/${formId}/${docType}`,
       {
         method: "POST",
         body: formData,
