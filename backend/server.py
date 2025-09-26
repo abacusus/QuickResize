@@ -118,7 +118,7 @@ def resize_image_api(formType, docType):
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         print(f"An error occurred: {e}")
-        return jsonify({"error": "A server error occurred while processing the image."}), 500
+        return jsonify({"error": "Click on Download Button Again"}), 500
     
 # Sending Form details
 @app.route('/details', methods=['GET'])
