@@ -18,8 +18,9 @@ CORS(app)
 
 def process_image(image_bytes, config):
     img = Image.open(io.BytesIO(image_bytes))
+    # Always stretch to target size
     resized_img = img.resize((config["width"], config["height"]))
-    
+
     output_buffer = io.BytesIO()
     dpi_value = config.get("dpi", 300)
     dpi_tuple = (dpi_value, dpi_value)
@@ -59,19 +60,6 @@ def process_image(image_bytes, config):
                 if final_size_kb >= config["minKB"]:
                     break
 
-        # If still too small, pad image with white border
-        if "minKB" in config and final_size_kb < config["minKB"]:
-            pad = 20
-            while final_size_kb < config["minKB"] and pad < 500:
-                new_w = resized_img.width + pad
-                new_h = resized_img.height + pad
-                padded_img = Image.new("RGB", (new_w, new_h), (255, 255, 255))
-                padded_img.paste(resized_img, ((pad // 2), (pad // 2)))
-                resized_img = padded_img
-                save_jpeg_with_quality(output_buffer, quality, dpi_value)
-                final_size_kb = len(output_buffer.getvalue()) / 1024
-                pad += 20
-
     elif config["format"] == "png":
         resized_img.save(
             output_buffer,
@@ -103,8 +91,8 @@ def resize_image_api(formType, docType):
 
         uploaded_file = request.files['file']
         config = form_configs.get(formType, {}).get(docType)
-        # if not config:
-        #     return jsonify({"error": "Invalid form or document type provided."}), 400
+        if not config:
+            return jsonify({"error": "Invalid form or document type provided."}), 400
 
         # Read the uploaded file as bytes (regardless of input format)
         image_bytes = uploaded_file.read()

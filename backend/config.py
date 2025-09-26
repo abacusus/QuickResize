@@ -6,7 +6,7 @@ form_configs = {
         },
         "Signature": {
             "width": 140,
-            "height": 60,
+            "height": 100,
             "minKB": 10,
             "maxKB": 20,
             "format": "jpeg",
