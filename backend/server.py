@@ -101,10 +101,10 @@ def resize_image_api(formType, docType):
         if 'file' not in request.files:
             return jsonify({"error": "No file uploaded. Ensure the form field is named 'file'."}), 400
 
-        uploaded_file = request.files['file']
-        config = form_configs.get(formType, {}).get(docType)
-        if not config:
-            return jsonify({"error": "Invalid form or document type provided."}), 400
+        # uploaded_file = request.files['file']
+        # config = form_configs.get(formType, {}).get(docType)
+        # if not config:
+        #     return jsonify({"error": "Invalid form or document type provided."}), 400
 
         # Read the uploaded file as bytes (regardless of input format)
         image_bytes = uploaded_file.read()
