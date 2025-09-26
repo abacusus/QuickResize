@@ -106,7 +106,17 @@ def resize_image_api(formType, docType):
         if not config:
             return jsonify({"error": "Invalid form or document type provided."}), 400
 
+        # Read the uploaded file as bytes (regardless of input format)
         image_bytes = uploaded_file.read()
+
+        # Try to open the image to validate it's a supported image
+        try:
+            img = Image.open(io.BytesIO(image_bytes))
+            img.verify()  # Just to check if it's a valid image
+        except Exception:
+            return jsonify({"error": "Uploaded file is not a valid image."}), 400
+
+        # Now process the image (conversion handled inside process_image)
         processed_buffer = process_image(image_bytes, config)
 
         return send_file(
