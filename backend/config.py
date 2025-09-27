@@ -50,7 +50,7 @@ form_configs = {
         "Signature": {
             "width": 140,
             "height": 110,
-            "minKB": 10,
+            "minKB": 0,
             "maxKB": 40,
             "format": "jpeg",
             "dpi": 300,
@@ -58,7 +58,7 @@ form_configs = {
         "Left_Thumb": {
             "width": 110,
             "height": 140,
-            "minKB": 10,
+            "minKB": 0,
             "maxKB": 40,
             "format": "jpeg",
             "dpi": 300,
@@ -66,7 +66,7 @@ form_configs = {
           "Right_Thumb": {
             "width": 110,
             "height": 140,
-            "minKB": 10,
+            "minKB": 0,
             "maxKB": 40,
             "format": "jpeg",
             "dpi": 300,
