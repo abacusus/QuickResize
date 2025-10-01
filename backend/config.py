@@ -5,8 +5,7 @@ form_configs = {
             "logo": "images/ssc.jpg"
         },
         "Signature": {
-            "width": 140,
-            "height": 100,
+            "height": 300,
             "minKB": 10,
             "maxKB": 20,
             "format": "jpeg",
