@@ -5,7 +5,7 @@ from config import form_configs
 
 
 def process_image(image_bytes, config):
-    """Resize and process image according to config."""
+    """Resize and process image"""
     img = Image.open(io.BytesIO(image_bytes))
     resized_img = img.resize((config["width"], config["height"]))
 
@@ -29,7 +29,7 @@ def process_image(image_bytes, config):
         save_jpeg_with_quality(output_buffer, quality, dpi_value)
         final_size_kb = len(output_buffer.getvalue()) / 1024
 
-        # Try to meet minimum KB
+        #  meet min KB
         if "minKB" in config and final_size_kb < config["minKB"]:
             while quality < max_quality:
                 quality += 5
@@ -38,7 +38,7 @@ def process_image(image_bytes, config):
                 if final_size_kb >= config["minKB"]:
                     break
 
-        # Increase DPI if still too small
+        # Increase DPI if small
         if "minKB" in config and final_size_kb < config["minKB"]:
             while dpi_value < 1200:
                 dpi_value += 100
